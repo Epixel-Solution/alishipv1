@@ -198,7 +198,7 @@ function AddressBlock({ prefix, title, register, formState, watch, setValue }: {
   const town: string = watch(`${prefix}_town`) || "";
   const subcounties = county ? Object.keys(KENYA_LOCATION_DATA[county] ?? {}) : [];
   const towns = county && subcounty ? (KENYA_LOCATION_DATA[county]?.[subcounty] ?? []) : [];
- 
+
   const handleCountyChange = (val: string) => {
     setValue(`${prefix}_county`, val, { shouldValidate: true });
     setValue(`${prefix}_subcounty`, "", { shouldValidate: false });
@@ -281,7 +281,7 @@ function AddressBlock({ prefix, title, register, formState, watch, setValue }: {
 // ─── Main form ────────────────────────────────────────────────────────────────
 export function WaybillForm({ mode }: Props) {
   const navigate = useNavigate();
-   const [pendingTracking, setPendingTracking] = useState<string>("");
+  const [pendingTracking, setPendingTracking] = useState<string>("");
   const { user, profile, role } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   const [paymentPhone, setPaymentPhone] = useState("");
@@ -353,9 +353,12 @@ export function WaybillForm({ mode }: Props) {
       tracking = preGeneratedTracking || generateTrackingNumber();
     }
 
-    const qrData = await QRCode.toDataURL(tracking, { margin: 1, width: 256 });
+    const TRACK_BASE_URL = "https://alishiplogisticsv1.vercel.app";
 
-    // payment_type: cod = rider collects product price; prepaid = already settled
+    const qrData = await QRCode.toDataURL(
+      `${TRACK_BASE_URL}/track/${tracking}`,
+      { margin: 1, width: 256 }
+    ); // payment_type: cod = rider collects product price; prepaid = already settled
     const payment_type: "cod" | "prepaid" =
       values.settlement_type === "cod" || values.settlement_type === "freight_collect_cod"
         ? "cod"
@@ -611,7 +614,7 @@ export function WaybillForm({ mode }: Props) {
     setSubmitting(true);
     try {
       stopPolling();
-     const { id, tracking, senderLocation } = await buildAndInsert(fd, "manual", undefined, manualRef.trim(), pendingTracking);
+      const { id, tracking, senderLocation } = await buildAndInsert(fd, "manual", undefined, manualRef.trim(), pendingTracking);
       setPaymentState({ stage: "paid" });
       toast.success(`✅ Manual payment recorded. Waybill ${tracking} created.`);
       setTimeout(() => {
