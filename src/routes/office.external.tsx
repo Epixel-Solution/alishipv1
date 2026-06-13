@@ -65,8 +65,10 @@ export function ExternalForm({ basePath }: { basePath: string }) {
     setSubmitting(true);
     try {
       const tracking = generateTrackingNumber();
-      const qrData = await QRCode.toDataURL(tracking, { margin: 1, width: 256 });
-      const { data: { user } } = await supabase.auth.getUser();
+      const qrData = await QRCode.toDataURL(
+        `https://alishiplogisticsv1.vercel.app/track?waybill=${encodeURIComponent(tracking)}`,
+        { margin: 1, width: 256 }
+      ); const { data: { user } } = await supabase.auth.getUser();
       const isCod = (values.amount ?? 0) > 0;
       const { data, error } = await supabase
         .from("parcels")
