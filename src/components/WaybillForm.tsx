@@ -354,16 +354,13 @@ export function WaybillForm({ mode }: Props) {
     }
 
     const TRACK_BASE_URL = "https://alishiplogisticsv1.vercel.app";
-<<<<<<< HEAD
 
     const qrData = await QRCode.toDataURL(
-      `${TRACK_BASE_URL}/track/${tracking}`,
+      `${TRACK_BASE_URL}/track?waybill=${tracking}`,
       { margin: 1, width: 256 }
-    ); // payment_type: cod = rider collects product price; prepaid = already settled
-=======
-    const qrData = await QRCode.toDataURL(`${TRACK_BASE_URL}/?track=${tracking}`, { margin: 1, width: 256 });
+    );
+
     // payment_type: cod = rider collects product price; prepaid = already settled
->>>>>>> 07f43264e388261148ccd57297b6942a52c4d882
     const payment_type: "cod" | "prepaid" =
       values.settlement_type === "cod" || values.settlement_type === "freight_collect_cod"
         ? "cod"
