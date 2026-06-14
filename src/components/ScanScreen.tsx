@@ -54,6 +54,9 @@ const EXCEPTION_TYPES = [
   "Other",
 ];
 
+// Statuses that are permanently terminal — no further scanning allowed
+const TERMINAL_STATUSES: ParcelStatus[] = ["Delivered"];
+
 export function ScanScreen({ scanType, backTo }: Props) {
   const cfg = SCAN_CONFIG[scanType];
   const { user, role, profile } = useAuth();
@@ -72,7 +75,6 @@ export function ScanScreen({ scanType, backTo }: Props) {
     scanType === "out_for_delivery" && (role === "super_admin" || role === "office");
   const isBagScan = ["vehicle_sealing", "departure", "arrival"].includes(scanType);
 
-  /** Handle a bag-number scan. Updates bag + all parcels in it. */
   const handleBag = async (bagNumber: string) => {
     const { data: bag, error } = await supabase
       .from("bags")
@@ -85,7 +87,6 @@ export function ScanScreen({ scanType, backTo }: Props) {
       return;
     }
 
-    // Resolve site names for context panel + log notes
     const siteIds = [bag.site_origin, bag.site_destination].filter(Boolean) as string[];
     let fromName: string | undefined;
     let toName: string | undefined;
@@ -163,14 +164,10 @@ export function ScanScreen({ scanType, backTo }: Props) {
         ? `[${cfg.label}] Collected: ${opts.amount}`
         : `[${cfg.label}]`;
 
-    // For admin/office assigning rider from Created status, allow the transition
     const isAdminAssign = isOfficeOFD && opts.assignRider && parcel.status === "Created";
     const newStatus = isAdminAssign ? "Out for Delivery" : (isReschedule ? "Rescheduled" : cfg.status);
 
-    const update: any = {
-      status: newStatus,
-      notes: note,
-    };
+    const update: any = { status: newStatus, notes: note };
 
     if (scanType === "delivered") {
       update.delivered_at = new Date().toISOString();
@@ -188,7 +185,6 @@ export function ScanScreen({ scanType, backTo }: Props) {
       else if (isOfficeOFD && opts.assignRider) update.assigned_rider_id = opts.assignRider;
     }
 
-    // Offline queue: if browser is offline, queue and exit early.
     if (typeof navigator !== "undefined" && !navigator.onLine) {
       enqueueScan({ parcelId: parcel.id, tracking, update });
       setLast({
@@ -213,7 +209,6 @@ export function ScanScreen({ scanType, backTo }: Props) {
       return;
     }
 
-    // COD reconciliation row on payment collection
     if (scanType === "payment" && opts.amount !== undefined && user) {
       await supabase.from("cod_reconciliation").insert({
         parcel_id: parcel.id,
@@ -226,7 +221,6 @@ export function ScanScreen({ scanType, backTo }: Props) {
     setLast({ ok: true, message: `${data.tracking_number} → ${data.status}`, parcel: data });
     toast.success(`${data.tracking_number} updated to ${data.status}`);
 
-    // WhatsApp prompts
     const riderName = profile?.full_name ?? "Rider";
     const tn = data.tracking_number;
     const rcv = data.receiver_name ?? "";
@@ -246,7 +240,6 @@ export function ScanScreen({ scanType, backTo }: Props) {
   };
 
   const handle = async (code: string) => {
-    // Bag-number flow for sealing/departure/arrival
     if (isBagScan && code.toUpperCase().startsWith("BAG-")) {
       await handleBag(code.toUpperCase());
       return;
@@ -275,9 +268,17 @@ export function ScanScreen({ scanType, backTo }: Props) {
       return;
     }
 
-    // Preflight: prevent re-scans / invalid transitions (super_admin and office can override)
     const current = parcel.status as ParcelStatus;
     const target = cfg.status;
+
+    // Hard lock — nobody can update a terminal status parcel
+    if (TERMINAL_STATUSES.includes(current)) {
+      const msg = `Parcel is already ${current} — cannot be updated further.`;
+      setLast({ ok: false, message: msg, parcel });
+      toast.error(msg);
+      return;
+    }
+
     const canOverride = role === "super_admin" || role === "office";
 
     if (!canOverride) {
@@ -395,14 +396,10 @@ export function ScanScreen({ scanType, backTo }: Props) {
                 <div>
                   <Label>Exception type</Label>
                   <Select value={excType} onValueChange={setExcType}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {EXCEPTION_TYPES.map((t) => (
-                        <SelectItem key={t} value={t}>
-                          {t}
-                        </SelectItem>
+                        <SelectItem key={t} value={t}>{t}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -459,9 +456,7 @@ export function ScanScreen({ scanType, backTo }: Props) {
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setPending(null)}>
-              Cancel
-            </Button>
+            <Button variant="outline" onClick={() => setPending(null)}>Cancel</Button>
             <Button
               className="bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={confirmDisabled}

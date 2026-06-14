@@ -27,10 +27,21 @@ export function ScannerInput({ onScan, disabled }: Props) {
     };
   }, []);
 
+  const extractCode = (raw: string): string => {
+    const trimmed = raw.trim();
+    try {
+      const url = new URL(trimmed);
+      const waybill = url.searchParams.get("waybill");
+      if (waybill) return waybill;
+    } catch {
+      // Not a URL — use as-is
+    }
+    return trimmed;
+  };
+
   const start = async () => {
     try {
       setActive(true);
-      // small delay so the div exists
       await new Promise((r) => setTimeout(r, 50));
       const instance = new Html5Qrcode(containerId);
       ref.current = instance;
@@ -42,7 +53,7 @@ export function ScannerInput({ onScan, disabled }: Props) {
           instance.clear();
           ref.current = null;
           setActive(false);
-          await onScan(decoded.trim());
+          await onScan(extractCode(decoded));
         },
         () => {},
       );
@@ -64,7 +75,7 @@ export function ScannerInput({ onScan, disabled }: Props) {
   const submitManual = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!manual.trim()) return;
-    await onScan(manual.trim());
+    await onScan(extractCode(manual));
     setManual("");
   };
 

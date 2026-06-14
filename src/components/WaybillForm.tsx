@@ -355,10 +355,10 @@ export function WaybillForm({ mode }: Props) {
 
     const TRACK_BASE_URL = "https://alishiplogisticsv1.vercel.app";
 
-    const qrData = await QRCode.toDataURL(
-      `${TRACK_BASE_URL}/track?waybill=${tracking}`,
-      { margin: 1, width: 256 }
-    );
+const qrData = await QRCode.toDataURL(
+  `${TRACK_BASE_URL}/track?waybill=${encodeURIComponent(tracking)}`,
+  { margin: 1, width: 256 }
+);
 
     // payment_type: cod = rider collects product price; prepaid = already settled
     const payment_type: "cod" | "prepaid" =
