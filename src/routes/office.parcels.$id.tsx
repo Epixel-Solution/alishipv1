@@ -236,7 +236,7 @@ function ParcelDetail() {
     addrName: { fontFamily: FONT_HEADING, fontSize: size === "a6" ? 12 : 15, fontWeight: 900, lineHeight: 1.2, marginBottom: 1 } as React.CSSProperties,
     addrPhone:{ fontSize: size === "a6" ? 9.5 : 12, color: "#444", marginBottom: 3 } as React.CSSProperties,
     addrLoc:  { fontSize: size === "a6" ? 9 : 11, fontWeight: 700, color: "#FF6600", lineHeight: 1.3 } as React.CSSProperties,
-    addrLocFrom:{ fontSize: size === "a6" ? 9 : 11, fontWeight: 600, color: "#333", lineHeight: 1.3 } as React.CSSProperties,
+    addrLocFrom:{ fontSize: size === "a6" ? 9 : 11, fontWeight: 600, color: "#333", lineHeight: 1.3 },
     addrPin:  { fontSize: size === "a6" ? 8.5 : 10, color: "#666", marginTop: 3, paddingTop: 3, borderTop: "0.5px solid #FFD9B3", lineHeight: 1.3 } as React.CSSProperties,
 
     // delivery confirmation
@@ -449,7 +449,7 @@ function ParcelDetail() {
 
           {/* COD combined callout */}
           {bd.showCombined && (
-            <div style={S.cod}>
+            <div style={S.cod} className="no-print">
               <div>
                 <div style={S.codTag}>Collect on delivery</div>
                 <div style={S.codBreak}>
@@ -462,7 +462,7 @@ function ParcelDetail() {
 
           {/* Single freight (non-combined) */}
           {bd.showFreight && !bd.showCombined && (
-            <div style={S.cod}>
+            <div style={S.cod} className="no-print">
               <div>
                 <div style={S.codTag}>{bd.freightLabel}</div>
               </div>
@@ -472,7 +472,7 @@ function ParcelDetail() {
 
           {/* COD only */}
           {bd.showCOD && !bd.showCombined && (
-            <div style={S.cod}>
+            <div style={S.cod} className="no-print">
               <div>
                 <div style={S.codTag}>Cash on Delivery — product</div>
               </div>
