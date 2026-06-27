@@ -24,7 +24,7 @@ function ParcelsList() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      let qb = supabase.from("parcels").select("*").order("created_at", { ascending: false }).limit(200);
+      let qb = supabase.from("parcels").select("id, tracking_number, receiver_name, receiver_location, status, created_at").order("created_at", { ascending: false }).limit(200);
       if (status) qb = qb.eq("status", status as any);
       if (q.trim()) qb = qb.or(`tracking_number.ilike.%${q}%,receiver_name.ilike.%${q}%,sender_name.ilike.%${q}%`);
       const { data } = await qb;
