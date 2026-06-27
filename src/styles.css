@@ -57,120 +57,89 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* Soft neutral theme — easier on the eyes than pure white. */
+/* ─── Base theme: hex values only (works on ALL browsers/devices) ─── */
 :root {
   --radius: 0.875rem;
 
-  /* Each variable has a hex fallback first, then the oklch value.
-     Older Android WebViews that don't support oklch will use the hex. */
+  --background: #f0f0f2;
+  --foreground: #2a2a2e;
+  --card: #fdfdfd;
+  --card-foreground: #2a2a2e;
+  --popover: #fdfdfd;
+  --popover-foreground: #2a2a2e;
+  --primary: #FF6600;
+  --primary-foreground: #ffffff;
+  --primary-glow: #ff8533;
+  --secondary: #e8e8ec;
+  --secondary-foreground: #2a2a2e;
+  --muted: #e8e8ec;
+  --muted-foreground: #6b6b72;
+  --accent: #fef0e6;
+  --accent-foreground: #a34400;
+  --destructive: #d94f2a;
+  --destructive-foreground: #ffffff;
+  --success: #2e9e5b;
+  --success-foreground: #ffffff;
+  --warning: #d4a017;
+  --warning-foreground: #1a1a1a;
+  --border: rgba(42, 42, 46, 0.14);
+  --input: rgba(42, 42, 46, 0.18);
+  --ring: #FF6600;
+  --sidebar: #fdfdfd;
+  --sidebar-foreground: #2a2a2e;
+  --sidebar-primary: #FF6600;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ebebef;
+  --sidebar-accent-foreground: #2a2a2e;
+  --sidebar-border: rgba(42, 42, 46, 0.14);
+  --sidebar-ring: #FF6600;
 
-  --background: #f0f0f2;                        /* fallback */
-  --background: oklch(0.94 0.004 270);          /* soft warm grey */
+  --gradient-primary: linear-gradient(135deg, #FF6600, #ff8533);
+  --gradient-hero: linear-gradient(135deg, #FF6600, #ff7a1a);
+  --shadow-elegant: 0 10px 30px -12px rgba(255, 102, 0, 0.35);
+  --shadow-card: 0 1px 3px 0 rgba(42, 42, 46, 0.10), 0 1px 2px -1px rgba(42, 42, 46, 0.08);
+}
 
-  --foreground: #2a2a2e;                        /* fallback */
-  --foreground: oklch(0.18 0.01 270);
-
-  --card: #fdfdfе;                              /* fallback */
-  --card: oklch(0.99 0.002 270);               /* near-white cards */
-
-  --card-foreground: #2a2a2e;                   /* fallback */
-  --card-foreground: oklch(0.18 0.01 270);
-
-  --popover: #fdfdfd;                           /* fallback */
-  --popover: oklch(0.99 0.002 270);
-
-  --popover-foreground: #2a2a2e;                /* fallback */
-  --popover-foreground: oklch(0.18 0.01 270);
-
-  --primary: #FF6600;                           /* fallback */
-  --primary: oklch(0.69 0.19 45);              /* #FF6600 */
-
-  --primary-foreground: #ffffff;                /* fallback */
-  --primary-foreground: oklch(1 0 0);
-
-  --primary-glow: #ff8533;                      /* fallback */
-  --primary-glow: oklch(0.78 0.17 50);
-
-  --secondary: #e8e8ec;                         /* fallback */
-  --secondary: oklch(0.91 0.005 270);
-
-  --secondary-foreground: #2a2a2e;              /* fallback */
-  --secondary-foreground: oklch(0.18 0.01 270);
-
-  --muted: #e8e8ec;                             /* fallback */
-  --muted: oklch(0.91 0.005 270);
-
-  --muted-foreground: #6b6b72;                  /* fallback */
-  --muted-foreground: oklch(0.45 0.01 270);
-
-  --accent: #fef0e6;                            /* fallback */
-  --accent: oklch(0.93 0.04 45);
-
-  --accent-foreground: #a34400;                 /* fallback */
-  --accent-foreground: oklch(0.35 0.15 45);
-
-  --destructive: #d94f2a;                       /* fallback */
-  --destructive: oklch(0.6 0.22 27);
-
-  --destructive-foreground: #ffffff;            /* fallback */
-  --destructive-foreground: oklch(1 0 0);
-
-  --success: #2e9e5b;                           /* fallback */
-  --success: oklch(0.62 0.16 152);
-
-  --success-foreground: #ffffff;                /* fallback */
-  --success-foreground: oklch(1 0 0);
-
-  --warning: #d4a017;                           /* fallback */
-  --warning: oklch(0.78 0.16 80);
-
-  --warning-foreground: #1a1a1a;               /* fallback */
-  --warning-foreground: oklch(0.18 0 0);
-
-  --border: rgba(42, 42, 46, 0.14);            /* fallback */
-  --border: oklch(0.18 0.01 270 / 14%);
-
-  --input: rgba(42, 42, 46, 0.18);             /* fallback */
-  --input: oklch(0.18 0.01 270 / 18%);
-
-  --ring: #FF6600;                              /* fallback */
-  --ring: oklch(0.69 0.19 45);
-
-  --sidebar: #fdfdfd;                           /* fallback */
-  --sidebar: oklch(0.99 0.002 270);
-
-  --sidebar-foreground: #2a2a2e;               /* fallback */
-  --sidebar-foreground: oklch(0.18 0.01 270);
-
-  --sidebar-primary: #FF6600;                   /* fallback */
-  --sidebar-primary: oklch(0.69 0.19 45);
-
-  --sidebar-primary-foreground: #ffffff;        /* fallback */
-  --sidebar-primary-foreground: oklch(1 0 0);
-
-  --sidebar-accent: #ebebef;                    /* fallback */
-  --sidebar-accent: oklch(0.93 0.005 270);
-
-  --sidebar-accent-foreground: #2a2a2e;         /* fallback */
-  --sidebar-accent-foreground: oklch(0.18 0.01 270);
-
-  --sidebar-border: rgba(42, 42, 46, 0.14);    /* fallback */
-  --sidebar-border: oklch(0.18 0.01 270 / 14%);
-
-  --sidebar-ring: #FF6600;                      /* fallback */
-  --sidebar-ring: oklch(0.69 0.19 45);
-
-  --gradient-primary: linear-gradient(135deg, #FF6600, #ff8533);                          /* fallback */
-  --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-glow));
-
-  --gradient-hero: linear-gradient(135deg, #FF6600, #ff7a1a);                             /* fallback */
-  --gradient-hero: linear-gradient(135deg, oklch(0.69 0.19 45), oklch(0.74 0.18 50));
-
-  --shadow-elegant: 0 10px 30px -12px rgba(255, 102, 0, 0.35);                           /* fallback */
-  --shadow-elegant: 0 10px 30px -12px color-mix(in oklab, var(--primary) 35%, transparent);
-
-  --shadow-card: 0 1px 3px 0 rgba(42, 42, 46, 0.10), 0 1px 2px -1px rgba(42, 42, 46, 0.08); /* fallback */
-  --shadow-card: 0 1px 3px 0 oklch(0.18 0.01 270 / 10%), 0 1px 2px -1px oklch(0.18 0.01 270 / 8%);
+/* ─── oklch enhancement: only applied on browsers that support it ─── */
+@supports (color: oklch(0 0 0)) {
+  :root {
+    --background: oklch(0.94 0.004 270);
+    --foreground: oklch(0.18 0.01 270);
+    --card: oklch(0.99 0.002 270);
+    --card-foreground: oklch(0.18 0.01 270);
+    --popover: oklch(0.99 0.002 270);
+    --popover-foreground: oklch(0.18 0.01 270);
+    --primary: oklch(0.69 0.19 45);
+    --primary-foreground: oklch(1 0 0);
+    --primary-glow: oklch(0.78 0.17 50);
+    --secondary: oklch(0.91 0.005 270);
+    --secondary-foreground: oklch(0.18 0.01 270);
+    --muted: oklch(0.91 0.005 270);
+    --muted-foreground: oklch(0.45 0.01 270);
+    --accent: oklch(0.93 0.04 45);
+    --accent-foreground: oklch(0.35 0.15 45);
+    --destructive: oklch(0.6 0.22 27);
+    --destructive-foreground: oklch(1 0 0);
+    --success: oklch(0.62 0.16 152);
+    --success-foreground: oklch(1 0 0);
+    --warning: oklch(0.78 0.16 80);
+    --warning-foreground: oklch(0.18 0 0);
+    --border: oklch(0.18 0.01 270 / 14%);
+    --input: oklch(0.18 0.01 270 / 18%);
+    --ring: oklch(0.69 0.19 45);
+    --sidebar: oklch(0.99 0.002 270);
+    --sidebar-foreground: oklch(0.18 0.01 270);
+    --sidebar-primary: oklch(0.69 0.19 45);
+    --sidebar-primary-foreground: oklch(1 0 0);
+    --sidebar-accent: oklch(0.93 0.005 270);
+    --sidebar-accent-foreground: oklch(0.18 0.01 270);
+    --sidebar-border: oklch(0.18 0.01 270 / 14%);
+    --sidebar-ring: oklch(0.69 0.19 45);
+    --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-glow));
+    --gradient-hero: linear-gradient(135deg, oklch(0.69 0.19 45), oklch(0.74 0.18 50));
+    --shadow-elegant: 0 10px 30px -12px color-mix(in oklab, var(--primary) 35%, transparent);
+    --shadow-card: 0 1px 3px 0 oklch(0.18 0.01 270 / 10%), 0 1px 2px -1px oklch(0.18 0.01 270 / 8%);
+  }
 }
 
 @layer base {
@@ -183,6 +152,9 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    /* Prevent font scaling on Android from breaking layouts */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -198,14 +170,12 @@
    A4 full    : 210 × 297 mm
 ═══════════════════════════════════════════════════════════════════════════════ */
 
-/* ── Remove browser-injected headers and footers ── */
 @page {
   margin: 0;
 }
 
 @media print {
 
-  /* Hide everything except the waybill */
   body * {
     visibility: hidden;
   }
@@ -214,7 +184,6 @@
     visibility: visible;
   }
 
-  /* Position the waybill flush to the page */
   .print-area {
     position: fixed;
     left: 0;
@@ -225,12 +194,10 @@
     print-color-adjust: exact;
   }
 
-  /* Hide all screen-only UI */
   .no-print {
     display: none !important;
   }
 
-  /* ── A6 thermal label: 105 × 148 mm ── */
   .print-a6 {
     width: 105mm;
     min-height: 148mm;
@@ -243,7 +210,6 @@
     font-family: "DM Sans", ui-sans-serif, sans-serif;
   }
 
-  /* ── A4 full page ── */
   .print-a4 {
     width: 210mm;
     min-height: 297mm;
@@ -254,7 +220,6 @@
     font-family: "DM Sans", ui-sans-serif, sans-serif;
   }
 
-  /* Headings inside waybill use Urbanist */
   .print-area h1,
   .print-area h2,
   .print-area h3,
@@ -262,7 +227,6 @@
     font-family: "Urbanist", ui-sans-serif, sans-serif !important;
   }
 
-  /* Ensure background colors and images print */
   .print-area,
   .print-area * {
     -webkit-print-color-adjust: exact !important;
