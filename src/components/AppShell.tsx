@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState, type ReactNode } from "react";
+import { InstallPrompt } from "@/components/InstallPrompt";
 
 interface NavItem {
   to: string;
@@ -133,6 +134,8 @@ export function AppShell({ children, role }: { children: ReactNode; role: Role }
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-4">{children}</main>
 
       <ContactBanner />
+
+      {role !== "rider" && <InstallPrompt />}
 
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-zinc-800 bg-zinc-950 text-zinc-100">
         <div className="mx-auto grid max-w-5xl grid-cols-4">
