@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
 
@@ -33,7 +33,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<Role | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Guard against double-fetch: track the uid currently being loaded
+  const loadingUid = useRef<string | null>(null);
+
   const loadProfile = async (uid: string) => {
+    // If already loading this uid, skip — prevents double-fetch from
+    // onAuthStateChange + getSession firing simultaneously on app start
+    if (loadingUid.current === uid) return;
+    loadingUid.current = uid;
     try {
       const [{ data: p }, { data: r }] = await Promise.all([
         supabase
@@ -54,23 +61,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setProfile(null);
       setRole(null);
     } finally {
+      loadingUid.current = null;
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (s?.user) {
-        setTimeout(() => loadProfile(s.user.id), 0);
-      } else {
-        setProfile(null);
-        setRole(null);
-        setLoading(false);
-      }
-    });
-
+    // 1. Get the current session immediately (synchronous cache hit on most devices)
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
       setUser(data.session?.user ?? null);
@@ -81,7 +78,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
+    // 2. Listen for future auth changes (sign in, sign out, token refresh)
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+      setSession(s);
+      setUser(s?.user ?? null);
+      if (s?.user) {
+        loadProfile(s.user.id);
+      } else {
+        setProfile(null);
+        setRole(null);
+        loadingUid.current = null;
+        setLoading(false);
+      }
+    });
+
     return () => sub.subscription.unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const signIn = async (email: string, password: string): Promise<{ error: string | null; role: Role | null }> => {
