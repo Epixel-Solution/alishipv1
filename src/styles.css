@@ -145,6 +145,8 @@
 @layer base {
   * {
     border-color: var(--color-border);
+    /* Prevent accidental GPU layer promotion on weak Android GPUs */
+    will-change: auto;
   }
 
   html, body {
@@ -155,6 +157,8 @@
     /* Prevent font scaling on Android from breaking layouts */
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    /* Single stacking context — prevents ghost/duplicate rendering on Android */
+    isolation: isolate;
   }
 
   h1, h2, h3, h4, h5, h6 {
