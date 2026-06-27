@@ -90,14 +90,16 @@ export function OfficeHome({ basePath = "/office" }: { basePath?: string }) {
         <p className="text-sm text-zinc-400">Tap an action to begin.</p>
       </div>
 
+      {/* Grid tiles — removed transition-all, active:scale-95, and CSS-var shadows
+          These trigger GPU compositing on weak Android GPUs causing the ghost/stack glitch */}
       <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 md:grid-cols-5">
         {TILES.map((t) => (
           <Link
             key={t.to}
             to={t.to}
-            className="group flex aspect-square flex-col items-center justify-center gap-1.5 rounded-xl border border-border/60 bg-card p-2 text-center shadow-[var(--shadow-card)] transition-all hover:border-primary/60 hover:shadow-[var(--shadow-elegant)] active:scale-95"
+            className="group flex aspect-square flex-col items-center justify-center gap-1.5 rounded-xl border border-border bg-card p-2 text-center"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-50 text-primary">
               <t.icon className="h-5 w-5" />
             </div>
             <span className="text-[11px] font-medium leading-tight">{t.label}</span>
@@ -108,11 +110,11 @@ export function OfficeHome({ basePath = "/office" }: { basePath?: string }) {
       <section>
         <h2 className="mb-3 text-lg">Inbound</h2>
         <div className="grid grid-cols-2 gap-3">
-          <Card className="border-border/60 bg-card p-4">
+          <Card className="border-border bg-card p-4">
             <div className="text-xs uppercase tracking-wider text-muted-foreground">Yet to Arrive</div>
             <div className="mt-1 font-heading text-3xl font-bold text-primary">{counts.yetToArrive}</div>
           </Card>
-          <Card className="border-border/60 bg-card p-4">
+          <Card className="border-border bg-card p-4">
             <div className="text-xs uppercase tracking-wider text-muted-foreground">Arrived · Pending</div>
             <div className="mt-1 font-heading text-3xl font-bold text-primary">{counts.arrivedPending}</div>
           </Card>
@@ -141,12 +143,12 @@ function ListSection({ title, items, renderItem, emptyText }: {
     <section>
       <h2 className="mb-3 text-lg">{title}</h2>
       {items.length === 0 ? (
-        <Card className="border-border/60 bg-card/60 p-4 text-sm text-muted-foreground">{emptyText}</Card>
+        <Card className="border-border bg-card p-4 text-sm text-muted-foreground">{emptyText}</Card>
       ) : (
         <div className="space-y-2">
           {items.map((p) => (
             <Link key={p.id} to="/office/parcels/$id" params={{ id: p.id }}>
-              <Card className="border-border/60 bg-card p-3 transition-colors hover:border-primary/40">
+              <Card className="border-border bg-card p-3">
                 {renderItem(p)}
               </Card>
             </Link>
