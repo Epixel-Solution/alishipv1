@@ -146,8 +146,8 @@ export function AppShell({ children, role }: { children: ReactNode; role: Role }
                 key={it.to}
                 to={it.to}
                 className={cn(
-                  "flex flex-col items-center gap-1 py-2.5 text-xs transition-colors",
-                  active ? "text-primary" : "text-zinc-400 hover:text-zinc-100",
+                  "flex flex-col items-center gap-1 py-2.5 text-xs",
+                  active ? "text-primary" : "text-zinc-400",
                 )}
               >
                 <it.icon className="h-5 w-5" />
