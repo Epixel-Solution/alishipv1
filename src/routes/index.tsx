@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth, homeForRole } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { PublicShell } from "@/components/PublicShell";
 import { Search, Truck, Shield, Clock, MapPin, PackageCheck } from "lucide-react";
@@ -18,8 +19,18 @@ function Landing() {
 
   useEffect(() => {
     if (loading) return;
-    if (user && role) navigate({ to: homeForRole(role) });
+    if (user && role) navigate({ to: homeForRole(role), replace: true });
   }, [user, role, loading, navigate]);
+
+  // Show spinner while auth resolves or redirect is pending — prevents
+  // landing page from flashing under the dashboard on slow Android phones
+  if (loading || (user && role)) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   const onTrack = (e: React.FormEvent) => {
     e.preventDefault();
