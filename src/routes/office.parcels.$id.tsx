@@ -6,7 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { statusBadgeClass } from "@/lib/parcel-status";
-import { Printer, ChevronLeft, MapPin, Copy, Check } from "lucide-react";
+import { Printer, ChevronLeft, MapPin, Copy, Check, CreditCard, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { ALISHIP_CONTACT } from "@/lib/contact";
 import {
   DELIVERY_TYPE_LABEL,
@@ -55,7 +56,8 @@ function getSettlementBreakdown(parcel: any): {
     case "cash_at_office":
     case "prepaid":
     default:
-      return { showFreight: true, showCOD: false, showCombined: false, freight, cod: 0, combined: freight, freightLabel: "Freight" };
+      // Paid upfront — don't show freight on the waybill print
+      return { showFreight: false, showCOD: false, showCombined: false, freight, cod: 0, combined: freight, freightLabel: "Freight" };
   }
 }
 
@@ -142,6 +144,7 @@ function ParcelDetail() {
   const [parcel, setParcel] = useState<any>(null);
   const [logs, setLogs] = useState<any[]>([]);
   const [size, setSize] = useState<"a6" | "a4">("a6");
+  const [confirmingPayment, setConfirmingPayment] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -155,6 +158,26 @@ function ParcelDetail() {
       setLogs(l || []);
     })();
   }, [id]);
+
+  const refreshParcel = async () => {
+    const { data: p } = await supabase.from("parcels").select("*").eq("id", id).maybeSingle();
+    setParcel(p);
+    const { data: l } = await supabase.from("parcel_status_logs").select("*").eq("parcel_id", id).order("created_at", { ascending: false });
+    setLogs(l || []);
+  };
+
+  const handleConfirmPayment = async () => {
+    if (!parcel) return;
+    setConfirmingPayment(true);
+    const { error } = await supabase
+      .from("parcels")
+      .update({ payment_status: "completed", notes: "[Payment confirmed manually — Paybill/Cash]" })
+      .eq("id", parcel.id);
+    setConfirmingPayment(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Payment marked as confirmed");
+    await refreshParcel();
+  };
 
   const handlePrint = () => {
     if (!parcel) return;
@@ -372,6 +395,37 @@ function ParcelDetail() {
       </Card>
 
       <CopyMessages parcel={parcel} />
+
+      {/* ── Manual Payment Confirmation ── */}
+      {["freight_collect", "freight_collect_cod", "cod"].includes(parcel.settlement_type) && (
+        <Card className="no-print border-border/60 bg-card p-4 space-y-3">
+          <h2 className="text-base text-primary">Payment</h2>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs text-muted-foreground">Payment Status</div>
+              <div className={`text-sm font-semibold mt-0.5 ${parcel.payment_status === "completed" ? "text-green-600" : "text-amber-500"}`}>
+                {parcel.payment_status === "completed" ? "✅ Paid" : parcel.payment_status === "pending" ? "⏳ Awaiting M-Pesa" : "Not paid"}
+              </div>
+            </div>
+            {parcel.payment_status !== "completed" && (
+              <Button
+                size="sm"
+                disabled={confirmingPayment}
+                onClick={handleConfirmPayment}
+                className="bg-green-600 text-white hover:bg-green-700"
+              >
+                {confirmingPayment ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CreditCard className="mr-2 h-4 w-4" />}
+                Mark as Paid (Paybill/Cash)
+              </Button>
+            )}
+          </div>
+          {parcel.payment_status !== "completed" && (
+            <p className="text-xs text-muted-foreground">
+              Use this if the customer has paid via Paybill, bank transfer, or cash and you want to confirm manually.
+            </p>
+          )}
+        </Card>
+      )}
 
       <Card className="no-print border-border/60 bg-card p-4">
         <h2 className="mb-3 text-base">Status timeline</h2>
