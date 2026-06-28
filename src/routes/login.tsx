@@ -22,9 +22,19 @@ function LoginPage() {
 
   useEffect(() => {
     if (!loading && user && role) {
-      navigate({ to: homeForRole(role) });
+      navigate({ to: homeForRole(role), replace: true });
     }
   }, [user, role, loading, navigate]);
+
+  // While auth is resolving OR user is already logged in — show nothing.
+  // This prevents the login card from rendering on top of the dashboard.
+  if (loading || (user && role)) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +48,7 @@ function LoginPage() {
     }
 
     toast.success("Signed in");
-    navigate({ to: homeForRole(userRole) });
+    navigate({ to: homeForRole(userRole), replace: true });
   };
 
   return (
