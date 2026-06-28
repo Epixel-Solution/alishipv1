@@ -573,6 +573,28 @@ function RiderParcelDetail() {
                   {requestingPayment ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CreditCard className="mr-2 h-4 w-4" />}
                   {isPaymentPending ? "Resend M-Pesa Request" : "Request M-Pesa Payment"}
                 </Button>
+
+                {/* Manual payment confirmation — for Paybill or cash */}
+                <Button
+                  disabled={working}
+                  variant="outline"
+                  className="w-full border-green-500/40 text-green-600 hover:bg-green-500/10"
+                  onClick={async () => {
+                    setWorking(true);
+                    const { error } = await supabase
+                      .from("parcels")
+                      .update({ payment_status: "completed", notes: "[Payment confirmed manually — Paybill/Cash]" })
+                      .eq("id", parcel.id);
+                    setWorking(false);
+                    if (error) { toast.error(error.message); return; }
+                    toast.success("Payment confirmed manually");
+                    await refresh();
+                  }}
+                >
+                  <CheckCircle2 className="mr-2 h-4 w-4" />
+                  Confirm Paybill / Cash Payment
+                </Button>
+
                 <div className="rounded-md bg-amber-500/10 px-3 py-2 text-xs text-amber-600">
                   {isPaymentPending
                     ? `⏳ Waiting for payment from ${parcel.payment_phone || "customer"}…`
