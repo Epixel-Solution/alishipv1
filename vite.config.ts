@@ -38,6 +38,9 @@ export default defineConfig({
       },
       workbox: {
         navigateFallbackDenylist: [/^\/api/, /^\/~oauth/],
+        // Force a hard reload when a new service worker is waiting
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
           {
             urlPattern: ({ request }) => request.mode === "navigate",
@@ -45,10 +48,19 @@ export default defineConfig({
             options: { cacheName: "html", networkTimeoutSeconds: 3 },
           },
           {
+            // JS and CSS: NetworkFirst so new deploys take effect immediately
+            // Falls back to cache only when offline
             urlPattern: ({ request }) =>
-              ["style", "script", "worker", "image", "font"].includes(request.destination),
+              ["script", "style", "worker"].includes(request.destination),
+            handler: "NetworkFirst",
+            options: { cacheName: "scripts", networkTimeoutSeconds: 5 },
+          },
+          {
+            // Images and fonts: StaleWhileRevalidate is fine (they don't change logic)
+            urlPattern: ({ request }) =>
+              ["image", "font"].includes(request.destination),
             handler: "StaleWhileRevalidate",
-            options: { cacheName: "assets" },
+            options: { cacheName: "static-assets" },
           },
         ],
       },
